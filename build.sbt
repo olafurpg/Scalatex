@@ -96,7 +96,7 @@ lazy val scrollspy = project
     crossScalaVersions:= Seq(Constants.scala211, Constants.scala212),
     libraryDependencies ++= Seq(
       "com.lihaoyi" %%% "upickle" % Constants.upickle,
-      "org.scala-js" %%% "scalajs-dom" % "0.9.1",
+      "org.scala-js" %%% "scalajs-dom" % "0.9.3",
       "com.lihaoyi" %%% "scalatags" % Constants.scalaTags
     ),
     emitSourceMaps := false,
