@@ -1,20 +1,12 @@
+lazy val Constants = _root_.scalatex.Constants
 sharedSettings
 noPublish
 
-lazy val Version = new {
-  def scalaTags = "0.6.2"
-  def upickle = "0.4.4"
-  def scala210 = "2.10.6"
-  def scala211 = "2.11.11"
-  def scala212 = "2.12.3"
-}
-
-
 lazy val sharedSettings = Seq(
-  version := _root_.scalatex.Constants.version,
+  version := Constants.version,
   organization := "com.lihaoyi",
-  crossScalaVersions:= Seq(Version.scala211, Version.scala212),
-  scalaVersion := Version.scala212,
+  crossScalaVersions:= Seq(Constants.scala211, Constants.scala212),
+  scalaVersion := Constants.scala212,
   libraryDependencies += "com.lihaoyi" %% "acyclic" % "0.1.5" % "provided",
   addCompilerPlugin("com.lihaoyi" %% "acyclic" % "0.1.5"),
   autoCompilerPlugins := true,
@@ -52,22 +44,20 @@ lazy val api = project.settings(sharedSettings:_*)
     libraryDependencies ++= Seq(
       "com.lihaoyi" %% "utest" % "0.4.8" % "test",
       "com.lihaoyi" %% "scalaparse" % "0.4.3",
-      "com.lihaoyi" %% "scalatags" % Version.scalaTags,
+      "com.lihaoyi" %% "scalatags" % Constants.scalaTags,
       "org.scala-lang" % "scala-reflect" % scalaVersion.value
     ),
     testFrameworks += new TestFramework("utest.runner.Framework")
   )
 
-lazy val sbtPluginScalaVersion = Def.setting {
-  if (sbtVersion.in(pluginCrossBuild).value.startsWith("0.13")) Version.scala210
-  else Version.scala212
-}
 lazy val scalatexSbtPlugin = project.settings(sharedSettings:_*)
   .settings(
   name := "scalatex-sbt-plugin",
+  scalaVersion := {
+    if (sbtVersion.in(pluginCrossBuild).value.startsWith("0.13")) Constants.scala210
+    else Constants.scala212
+  },
   crossSbtVersions := List("1.0.0", "0.13.16"),
-  scalaVersion := sbtPluginScalaVersion.value,
-  crossScalaVersions := List(sbtPluginScalaVersion.value),
   sbtPlugin := true,
   (unmanagedSources in Compile) += baseDirectory.value/".."/"project"/"Constants.scala"
 )
@@ -85,9 +75,9 @@ lazy val site =
     "com.lihaoyi" %% "ammonite-ops" % "0.8.1",
     "org.webjars" % "highlightjs" % "9.7.0",
     "org.webjars" % "font-awesome" % "4.7.0",
-    "com.lihaoyi" %% "scalatags" % Version.scalaTags,
+    "com.lihaoyi" %% "scalatags" % Constants.scalaTags,
     "org.webjars" % "pure" % "0.6.0",
-    "com.lihaoyi" %% "upickle" % Version.upickle,
+    "com.lihaoyi" %% "upickle" % Constants.upickle,
     "org.scalaj" %% "scalaj-http" % "2.3.0"
   ),
   testFrameworks += new TestFramework("utest.runner.Framework"),
@@ -102,12 +92,12 @@ lazy val site =
 lazy val scrollspy = project
   .enablePlugins(ScalaJSPlugin)
   .settings(
-    scalaVersion := "2.12.1",
-    crossScalaVersions:= Seq("2.11.8", "2.12.1"),
+    scalaVersion := Constants.scala212,
+    crossScalaVersions:= Seq(Constants.scala211, Constants.scala212),
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "upickle" % Version.upickle,
+      "com.lihaoyi" %%% "upickle" % Constants.upickle,
       "org.scala-js" %%% "scalajs-dom" % "0.9.1",
-      "com.lihaoyi" %%% "scalatags" % Version.scalaTags
+      "com.lihaoyi" %%% "scalatags" % Constants.scalaTags
     ),
     emitSourceMaps := false,
     noPublish

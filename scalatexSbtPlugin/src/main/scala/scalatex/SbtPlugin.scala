@@ -83,8 +83,9 @@ object ScalatexReadme{
             url: String,
             autoResources: Seq[String] = Nil) = Project(
     id = projectId,
-    base = file(projectId)).settings(
-    scalatex.SbtPlugin.projectSettings,
+    base = file(projectId))
+      .settings(scalatex.SbtPlugin.projectSettings)
+      .settings(
     resourceDirectory in Compile := file(projectId) / "resources",
     sourceGenerators in Compile += task{
       val dir = (sourceManaged in Compile).value
@@ -114,6 +115,6 @@ object ScalatexReadme{
     },
     (SbtPlugin.scalatexDirectory in Compile) := file(projectId),
     libraryDependencies += "com.lihaoyi" %% "scalatex-site" % SbtPlugin.scalatexVersion,
-    scalaVersion := "2.12.1"
+    scalaVersion := _root_.scalatex.Constants.scala212
   ).enablePlugins(SbtPlugin)
 }
