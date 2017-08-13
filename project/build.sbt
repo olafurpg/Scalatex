@@ -3,9 +3,9 @@ unmanagedSources in Compile ++= {
   (root / "scalatexSbtPlugin" ** "*.scala").get
 }
 
-addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0")
+addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.1.0-M1")
 
-addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.18")
+addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.19")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.6.0")
+addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.6.2")
 

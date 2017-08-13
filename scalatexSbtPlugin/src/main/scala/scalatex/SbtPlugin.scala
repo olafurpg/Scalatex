@@ -2,6 +2,7 @@ package scalatex
 
 import sbt.Keys._
 import sbt._
+import PluginCompat._
 object SbtPlugin extends sbt.AutoPlugin {
   val scalatexVersion = scalatex.Constants.version
   val scalatexDirectory = taskKey[sbt.File]("Clone stuff from github")
@@ -50,9 +51,10 @@ object SbtPlugin extends sbt.AutoPlugin {
       "com.lihaoyi" %% "scalatex-api" % scalatexVersion
     ),
     watchSources ++= {
+      val compileTarget = (target in Compile).value
       for{
         f <- (scalatexDirectory in Compile).value.get
-        if f.relativeTo((target in Compile).value).isEmpty
+        if f.relativeTo(compileTarget).isEmpty
       } yield f
     }
   )
@@ -81,38 +83,37 @@ object ScalatexReadme{
             url: String,
             autoResources: Seq[String] = Nil) = Project(
     id = projectId,
-    base = file(projectId),
-    settings = scalatex.SbtPlugin.projectSettings ++ Seq(
-      resourceDirectory in Compile := file(projectId) / "resources",
-      sourceGenerators in Compile += task{
-        val dir = (sourceManaged in Compile).value
-        val manualResources: Seq[String] = for{
-          f <- (file(projectId) / "resources" ** "*").get
-          if f.isFile
-          rel <- f.relativeTo(file(projectId) / "resources")
-        } yield fixPath(rel.getPath)
+    base = file(projectId)).settings(
+    scalatex.SbtPlugin.projectSettings,
+    resourceDirectory in Compile := file(projectId) / "resources",
+    sourceGenerators in Compile += task{
+      val dir = (sourceManaged in Compile).value
+      val manualResources: Seq[String] = for{
+        f <- (file(projectId) / "resources" ** "*").get
+        if f.isFile
+        rel <- f.relativeTo(file(projectId) / "resources")
+      } yield fixPath(rel.getPath)
 
-        val generated = dir / "scalatex" / "Main.scala"
+      val generated = dir / "scalatex" / "Main.scala"
 
-        val autoResourcesStrings = autoResources.map('"' + _ + '"').mkString(",")
+      val autoResourcesStrings = autoResources.map('"' + _ + '"').mkString(",")
 
-        val manualResourceStrings = manualResources.map('"' + _ + '"').mkString(",")
-        IO.write(generated, s"""
-          package scalatex
-          object Main extends scalatex.site.Main(
-            url = "$url",
-            wd = ammonite.ops.Path("${fixPath(wd)}"),
-            output = ammonite.ops.Path("${fixPath((target in Compile).value / "scalatex")}"),
-            extraAutoResources = Seq[String]($autoResourcesStrings).map(ammonite.ops.resource/ammonite.ops.RelPath(_)),
-            extraManualResources = Seq[String]($manualResourceStrings).map(ammonite.ops.resource/ammonite.ops.RelPath(_)),
-            scalatex.$source()
-          )
-        """)
-        Seq(generated)
-      },
-      (SbtPlugin.scalatexDirectory in Compile) := file(projectId),
-      libraryDependencies += "com.lihaoyi" %% "scalatex-site" % SbtPlugin.scalatexVersion,
-      scalaVersion := "2.12.1"
-    )
+      val manualResourceStrings = manualResources.map('"' + _ + '"').mkString(",")
+      IO.write(generated, s"""
+        package scalatex
+        object Main extends scalatex.site.Main(
+          url = "$url",
+          wd = ammonite.ops.Path("${fixPath(wd)}"),
+          output = ammonite.ops.Path("${fixPath((target in Compile).value / "scalatex")}"),
+          extraAutoResources = Seq[String]($autoResourcesStrings).map(ammonite.ops.resource/ammonite.ops.RelPath(_)),
+          extraManualResources = Seq[String]($manualResourceStrings).map(ammonite.ops.resource/ammonite.ops.RelPath(_)),
+          scalatex.$source()
+        )
+      """)
+      Seq(generated)
+    },
+    (SbtPlugin.scalatexDirectory in Compile) := file(projectId),
+    libraryDependencies += "com.lihaoyi" %% "scalatex-site" % SbtPlugin.scalatexVersion,
+    scalaVersion := "2.12.1"
   ).enablePlugins(SbtPlugin)
 }
