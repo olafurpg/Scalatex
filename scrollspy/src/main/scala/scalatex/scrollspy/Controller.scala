@@ -25,7 +25,7 @@ class Toggler(var open: Boolean,
   }
 }
 
-@JSExportTopLevel("scalatex.scrollspy.Controller")
+@JSExport // TopLevel("scalatex.scrollspy.Controller")
 object Controller{
   lazy val styleTag = tags2.style.render
   dom.document.head.appendChild(styleTag)
