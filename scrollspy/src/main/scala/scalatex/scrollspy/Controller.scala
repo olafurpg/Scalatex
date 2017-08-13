@@ -5,7 +5,7 @@ import org.scalajs.dom.ext._
 import org.scalajs.dom.html
 
 import scalajs.js
-import scalajs.js.annotation.JSExport
+import scalajs.js.annotation.{JSExport, JSExportTopLevel}
 import scalatags.JsDom.all._
 import scalatags.JsDom.tags2
 
@@ -25,7 +25,7 @@ class Toggler(var open: Boolean,
   }
 }
 
-@JSExport
+@JSExportTopLevel("scalatex.scrollspy.Controller")
 object Controller{
   lazy val styleTag = tags2.style.render
   dom.document.head.appendChild(styleTag)
